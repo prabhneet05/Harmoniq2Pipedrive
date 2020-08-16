@@ -1,0 +1,671 @@
+[
+    {
+        "id": "e33dab7d.764598",
+        "type": "tab",
+        "label": "Harmoniq  2 Pipedrive",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d0fc299e.aa4ba8",
+        "type": "comment",
+        "z": "e33dab7d.764598",
+        "name": "Harmoniq --> Node-Red --> Pipedrive",
+        "info": "Harmoniq --> Node-Red --> Pipedrive",
+        "x": 170,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "590eef9a.1afd6",
+        "type": "inject",
+        "z": "e33dab7d.764598",
+        "name": "Scheduler for Harmoniq  to Pipedrive",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 190,
+        "y": 120,
+        "wires": [
+            [
+                "781c958d.5b2efc"
+            ]
+        ]
+    },
+    {
+        "id": "e77b80dd.2a88e",
+        "type": "http request",
+        "z": "e33dab7d.764598",
+        "name": "Get updated customers",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": true,
+        "url": "https://api.micronet.com.au:4445/apitest/Customers",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "2f52083.84f0ff8",
+                "eddf0ed2.a7128"
+            ]
+        ]
+    },
+    {
+        "id": "781c958d.5b2efc",
+        "type": "function",
+        "z": "e33dab7d.764598",
+        "name": "Set harmoniq credentials",
+        "func": "global.set(\"harmoniqApiKey\",\"NGM4YjVlNzctZjZmNC00NTE0LTk5OW\")\nglobal.set(\"pipedriveApiKey\",\"aa3b455fa1586782c7621faab11ffd263e80e462\")\nmsg.payload={};\nmsg.headers = {};\nmsg.headers['Authorization'] = 'Bearer '+ global.get(\"harmoniqApiKey\");\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 180,
+        "wires": [
+            [
+                "cb8b50aa.0c895"
+            ]
+        ]
+    },
+    {
+        "id": "cb8b50aa.0c895",
+        "type": "change",
+        "z": "e33dab7d.764598",
+        "name": "Set Execution time and Query param",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"UpdatedOn[gt]\":$fromMillis($flowContext(\"lastExecutionTime\"))}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "lastExecutionTime",
+                "pt": "flow",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 240,
+        "wires": [
+            [
+                "e77b80dd.2a88e",
+                "f592023a.660d5"
+            ]
+        ]
+    },
+    {
+        "id": "9cc52e5f.089fd",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Exception Occured in Get customers",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 870,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "f592023a.660d5",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 670,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "55f94383.914aec",
+        "type": "function",
+        "z": "e33dab7d.764598",
+        "name": "Process Organisations",
+        "func": "var organisationList=[];\nfor(i=0;i<msg.payload.Data.length;i++)\n{\n    if(typeof msg.payload.Data[i].Name !='undefined' && msg.payload.Data[i].Name !==null)\n    {\n    organisationList.push({payload: {\"ID\": msg.payload.Data[i].ID,\n                    \"Code\": msg.payload.Data[i].Code,\n                    \"Name\": msg.payload.Data[i].Name,\n                    \"Address\": msg.payload.Data[i].Address,\n                    \"Contacts\": msg.payload.Data[i].Contacts\n    }});\n    }\n    \n}\nreturn [organisationList];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 620,
+        "y": 420,
+        "wires": [
+            [
+                "5d087ed.cb8f58",
+                "bfee01b.9f9d8"
+            ]
+        ]
+    },
+    {
+        "id": "5d087ed.cb8f58",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 870,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "e2ba92b.f14a57",
+        "type": "function",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update organisation",
+        "func": "if(msg.payload.data.items.length>0)\n{\n    msg.url=\"https://api.pipedrive.com/v1/organizations/\"+msg.payload.data.items[0].item.id+\"?api_token=\"+global.get('pipedriveApiKey');\n    msg.method=\"PUT\";\n    \n    \n}\nelse\n{\n    \n    msg.url=\"https://api.pipedrive.com/v1/organizations\"+\"?api_token=\"+global.get('pipedriveApiKey');\n    msg.method=\"POST\";\n   \n}\n var countryId=null;\n var countryName=null;\nif(typeof msg.organisationRequest.Address.Country!='undefined' && msg.organisationRequest.Address.Country!==null)\n{\n     countryId=msg.organisationRequest.Address.Country.ID;\n     countryName=msg.organisationRequest.Address.Country.Name;\n}\nmsg.payload={\n    \"name\": msg.organisationRequest.Name,\n    \"country_code\":countryId,\n    \"label\":\"Customer\",\n    \"address\":[msg.organisationRequest.Address.AddressLine1,msg.organisationRequest.Address.AddressLine2,msg.organisationRequest.Address.County,msg.organisationRequest.Address.City,countryName].filter(Boolean).join(\", \"),\n    \"address_subpremise\":msg.organisationRequest.Address.AddressLine1,\n    \"address_street_number\":msg.organisationRequest.Address.AddressLine2,\n    \"address_sublocality\":msg.organisationRequest.Address.County,\n    \"address_locality\":msg.organisationRequest.Address.City,\n    \"address_country\":countryName,\n    \"address_postal_code\":msg.organisationRequest.Address.PostCode\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 950,
+        "y": 600,
+        "wires": [
+            [
+                "f8b81d94.e898f",
+                "32920a83.e97016"
+            ]
+        ]
+    },
+    {
+        "id": "bfee01b.9f9d8",
+        "type": "change",
+        "z": "e33dab7d.764598",
+        "name": "Store payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "organisationRequest",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"term\":msg.payload.Name,\"api_token\":$globalContext('pipedriveApiKey')}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 700,
+        "y": 480,
+        "wires": [
+            [
+                "734694ed.b477cc"
+            ]
+        ]
+    },
+    {
+        "id": "734694ed.b477cc",
+        "type": "http request",
+        "z": "e33dab7d.764598",
+        "name": "getOrganisationWithName",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": true,
+        "url": "https://api.pipedrive.com/v1/organizations/search",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 820,
+        "y": 540,
+        "wires": [
+            [
+                "5aa6f2.c581d91",
+                "e2ba92b.f14a57"
+            ]
+        ]
+    },
+    {
+        "id": "5aa6f2.c581d91",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1090,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "32920a83.e97016",
+        "type": "http request",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update Organisation",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 1050,
+        "y": 660,
+        "wires": [
+            [
+                "42b89a9e.90fcc4"
+            ]
+        ]
+    },
+    {
+        "id": "f8b81d94.e898f",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Create organisation Request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1260,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "7a6d3def.dda0b4",
+        "type": "function",
+        "z": "e33dab7d.764598",
+        "name": "Process persons",
+        "func": "var personList=[];\n\nfor(i=0;i<msg.payload.Contacts.length;i++)\n{\n    if(typeof msg.payload.Contacts[i].FullName !='undefined' && msg.payload.Contacts[i].FullName!==null)\n    {\n        var phone={};\n        var email={};\n        if(msg.payload.Contacts[i].Phone!==null && typeof msg.payload.Contacts[i].Phone !='undefined'){\n                   phone= {\"phone\": {\"value\": msg.payload.Contacts[i].Phone, \"primary\":true}};}\n         if(msg.payload.Contacts[i].EmailAddress!==null && typeof msg.payload.Contacts[i].EmailAddress !='undefined'){\n                 email=  { \"email\": {\"value\": msg.payload.Contacts[i].EmailAddress, \"primary\":true}};}           \n    personList.push({payload: {\"name\": msg.payload.Contacts[i].FullName,\n                    \"first_name\": msg.payload.Contacts[i].FirstName,\n                    \"last_name\": msg.payload.Contacts[i].LastName,\n                    \"org_id\": msg.organisationId,\n                    \"phone\": phone.phone,\n                    \"email\": email.email\n                   \n                    \n    }});\n    }\n}\nreturn [personList];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1450,
+        "y": 780,
+        "wires": [
+            [
+                "86906c9e.5b54c"
+            ]
+        ]
+    },
+    {
+        "id": "18261b61.778a75",
+        "type": "change",
+        "z": "e33dab7d.764598",
+        "name": "Store org id",
+        "rules": [
+            {
+                "t": "set",
+                "p": "organisationId",
+                "pt": "msg",
+                "to": "payload.data.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "organisationRequest",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1370,
+        "y": 720,
+        "wires": [
+            [
+                "7a6d3def.dda0b4"
+            ]
+        ]
+    },
+    {
+        "id": "d046e164.4ba6b",
+        "type": "function",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update Persons",
+        "func": "\nif(msg.payload.data.items.length>0)\n{\n    \n    msg.url=\"https://api.pipedrive.com/v1/persons/\"+msg.payload.data.items[0].item.id+\"?api_token=\"+global.get('pipedriveApiKey');\n    msg.method=\"PUT\";\n    msg.payload=msg.personRequest;\n    \n}\nelse\n{\n    \n    msg.url=\"https://api.pipedrive.com/v1/persons\"+\"?api_token=\"+global.get('pipedriveApiKey');\n    msg.method=\"POST\";\n    msg.payload=msg.personRequest;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1760,
+        "y": 960,
+        "wires": [
+            [
+                "3c82e428.140fac",
+                "94c21c7a.7dde8"
+            ]
+        ]
+    },
+    {
+        "id": "86906c9e.5b54c",
+        "type": "change",
+        "z": "e33dab7d.764598",
+        "name": "Store payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "personRequest",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"term\":msg.personRequest.name,\"api_token\":$globalContext('pipedriveApiKey'),\t\"organisation_id\":msg.organisationId}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1560,
+        "y": 840,
+        "wires": [
+            [
+                "8d95c3b6.f9344"
+            ]
+        ]
+    },
+    {
+        "id": "8d95c3b6.f9344",
+        "type": "http request",
+        "z": "e33dab7d.764598",
+        "name": "getPersonsWithName",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": true,
+        "url": "https://api.pipedrive.com/v1/persons/search",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 1660,
+        "y": 900,
+        "wires": [
+            [
+                "d046e164.4ba6b",
+                "2808997a.3b2146"
+            ]
+        ]
+    },
+    {
+        "id": "73fc043c.4532dc",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Exception Occured during Add/Update Person",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 2360,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "2808997a.3b2146",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1930,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "3c82e428.140fac",
+        "type": "http request",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update person",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 1870,
+        "y": 1020,
+        "wires": [
+            [
+                "d10160ae.97fb4"
+            ]
+        ]
+    },
+    {
+        "id": "2f52083.84f0ff8",
+        "type": "switch",
+        "z": "e33dab7d.764598",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 550,
+        "y": 360,
+        "wires": [
+            [
+                "55f94383.914aec"
+            ],
+            [
+                "9cc52e5f.089fd"
+            ]
+        ]
+    },
+    {
+        "id": "42b89a9e.90fcc4",
+        "type": "switch",
+        "z": "e33dab7d.764598",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 720,
+        "wires": [
+            [
+                "18261b61.778a75",
+                "51ac16c3.1e7948"
+            ],
+            [
+                "64005cf9.c06c24"
+            ]
+        ]
+    },
+    {
+        "id": "64005cf9.c06c24",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Exception Occured during add organisation",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1190,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "d10160ae.97fb4",
+        "type": "switch",
+        "z": "e33dab7d.764598",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1990,
+        "y": 1080,
+        "wires": [
+            [
+                "90bd5519.25ebb8"
+            ],
+            [
+                "73fc043c.4532dc"
+            ]
+        ]
+    },
+    {
+        "id": "eddf0ed2.a7128",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Updated/Added Customers",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 780,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "13743122.4f872f",
+        "type": "catch",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 100,
+        "y": 420,
+        "wires": [
+            [
+                "93f9591c.eab238"
+            ]
+        ]
+    },
+    {
+        "id": "93f9591c.eab238",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 280,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "51ac16c3.1e7948",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update Organisation success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "'Organisation added/updated successfully'",
+        "targetType": "jsonata",
+        "x": 1440,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "90bd5519.25ebb8",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Add/Update Person success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "'Person added/updated'",
+        "targetType": "jsonata",
+        "x": 2300,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "94c21c7a.7dde8",
+        "type": "debug",
+        "z": "e33dab7d.764598",
+        "name": "Add Person Request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 2040,
+        "y": 960,
+        "wires": []
+    }
+]

@@ -1,0 +1,1262 @@
+[
+    {
+        "id": "f59676ac.2cfda8",
+        "type": "tab",
+        "label": "Pipedrive 2 Harmoniq",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c6f34bab.ae9bd",
+        "type": "http response",
+        "z": "f59676ac.2cfda8",
+        "name": "Response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 140,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "46f9c21a.dc6054",
+        "type": "http in",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "url": "/v1/organisation",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 120,
+        "wires": [
+            [
+                "c6f34bab.ae9bd",
+                "26ea2946.6b26d6",
+                "4a902deb.1c40b4"
+            ]
+        ]
+    },
+    {
+        "id": "7187ccff.088e1c",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Pipedrive --> Node-Red --> Harmoniq",
+        "info": "Pipedrive --> Node-Red --> Harmoniq",
+        "x": 190,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ba0a9bef.6970c8",
+        "type": "http in",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "url": "/v1/person",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 320,
+        "wires": [
+            [
+                "501bbbf.4fccf44",
+                "daf2450e.845a08"
+            ]
+        ]
+    },
+    {
+        "id": "431d7533.259e94",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Organisation Webhook",
+        "info": "Retrieve the organization for that event\nRetrieve all persons for that organisation   \n",
+        "x": 140,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "8ad27557.3e9f88",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Person Webhook",
+        "info": "Retrieve the organization for that person \nRetrieve all persons for that organisation ",
+        "x": 80,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "2b5977f.c558908",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Retrieve Organisation Details",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": true,
+        "url": "https://api.pipedrive.com/v1/organizations/{{orgId}}",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 800,
+        "y": 480,
+        "wires": [
+            [
+                "8c2b3e21.f71dd"
+            ]
+        ]
+    },
+    {
+        "id": "8858714b.4c549",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Retrieve Persons in Organisation",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": true,
+        "url": "https://api.pipedrive.com/v1/organizations/{{orgId}}/Persons",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 600,
+        "y": 180,
+        "wires": [
+            [
+                "168da9ce.9f8db6",
+                "632a52e7.a0c37c"
+            ]
+        ]
+    },
+    {
+        "id": "a66711a6.d75758",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Transform Organisation Payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ID\": payload.data[0].id,\t    \"CompanyID\": payload.data[0].company_id,\t    \"Code\": $replace(payload.data[0].name, ' ', ''),\t    \"Name\": payload.data[0].name,\t    \"Address\": payload.data[0].address,\t    \"AddressLine1\": payload.data[0].address_street_number,\t    \"AddressLine2\": payload.data[0].address_route,\t    \"City\": payload.data[0].address_admin_area_level_1,\t    \"County\": payload.data[0].address_sublocality,\t    \"Country\": payload.data[0].address_country,\t    \"PostCode\": payload.data[0].address_postal_code,\t    \"DefaultCurrency\": \"\",\t    \"Phone\": payload.data[0].phone,\t    \"Mobile\": payload.data[0].mobile,\t    \"Fax\": payload.data[0].fax,\t    \"Email\": payload.data[0].owner_id.email \t}\t  ",
+                "tot": "jsonata"
+            },
+            {
+                "t": "delete",
+                "p": "url",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 660,
+        "wires": [
+            [
+                "e9e07f3f.c7baf",
+                "71136fba.dcbe78"
+            ]
+        ]
+    },
+    {
+        "id": "4a902deb.1c40b4",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Webhook Payload Received",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 200,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f5ba3f78.04eb68",
+        "type": "switch",
+        "z": "f59676ac.2cfda8",
+        "name": "Exist ?",
+        "property": "payload.TotalCount",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "gte",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2110,
+        "y": 1080,
+        "wires": [
+            [
+                "365d8f6f.65631"
+            ],
+            [
+                "73d613f9.a4c9ec"
+            ]
+        ]
+    },
+    {
+        "id": "581a6255.a92d34",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Check if Customer Exist",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://api.micronet.com.au:4445/apitest/Customers?Name[eq]={{orgName}}",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 1730,
+        "y": 1080,
+        "wires": [
+            [
+                "e8d74bed.9b48d8",
+                "7a96e6b8.409958"
+            ]
+        ]
+    },
+    {
+        "id": "e5532605.0baa18",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Insert Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 3080,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "5102fd58.acbb94",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 3350,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "e8d74bed.9b48d8",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Check Customer in Harmoniq",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 2030,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "cc7476dd.51adb8",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Set Headers and ID",
+        "func": "msg.payload = \"\";\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Authorization'] = 'Bearer '+global.get('harmoniqApiKey');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1250,
+        "y": 780,
+        "wires": [
+            [
+                "93426a8b.dd2078"
+            ]
+        ]
+    },
+    {
+        "id": "e9e07f3f.c7baf",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Save Organization",
+        "rules": [
+            {
+                "t": "set",
+                "p": "orgName",
+                "pt": "msg",
+                "to": "payload.Name",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "saveOrganization",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "countryName",
+                "pt": "msg",
+                "to": "payload.Country",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1190,
+        "y": 720,
+        "wires": [
+            [
+                "cc7476dd.51adb8"
+            ]
+        ],
+        "outputLabels": [
+            "orgname"
+        ]
+    },
+    {
+        "id": "bebf4acf.785ad8",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Insert Customer",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "https://api.micronet.com.au:4445/apitest/Customers",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 3000,
+        "y": 1140,
+        "wires": [
+            [
+                "e5532605.0baa18"
+            ]
+        ]
+    },
+    {
+        "id": "71136fba.dcbe78",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Organization Payload Transformed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1440,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "7a96e6b8.409958",
+        "type": "json",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 1950,
+        "y": 1080,
+        "wires": [
+            [
+                "f5ba3f78.04eb68"
+            ]
+        ]
+    },
+    {
+        "id": "6a52f826.075c38",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Final Payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"Code\": msg.payload.Code,\t    \"Name\": msg.payload.Name,\t    \"TradingName\": msg.payload.Name,\t    \"Address.AddressLine1\": msg.payload.AddressLine1,\t    \"Address.AddressLine2\": msg.payload.AddressLine2,\t    \"Address.City\": msg.payload.City,\t    \"Address.County\": $flowContext('saveCountryID'),\t    \"Address.Country\": msg.payload.Country,\t    \"Address.PostCode\": msg.payload.PostCode,\t    \"Phone\": msg.payload.Phone,\t    \"Mobile\": msg.payload.Mobile,\t    \"Fax\": msg.payload.Fax,\t    \"EmailAddress\": msg.payload.Email,\t    \t    \"Contacts\": [$flowContext(\"savePersons\")]\t }\t  ",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2680,
+        "y": 1020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6d11177.bf0ad",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Restored Saved Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 3190,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "365d8f6f.65631",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Restore Organization",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "saveOrganization",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2380,
+        "y": 1080,
+        "wires": [
+            [
+                "41b73e9d.8c0ac"
+            ]
+        ]
+    },
+    {
+        "id": "5d9a4e3.3e2aab",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Final Payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ID\": msg.saveCustomerId,\t    \"Code\": msg.payload.Code,\t    \"Name\": msg.payload.Name,\t    \"Address.AddressLine1\": msg.payload.AddressLine1,\t    \"Address.AddressLine2\": msg.payload.AddressLine2,\t    \"Address.City\": msg.payload.City,\t    \"Address.County\": msg.payload.County,\t    \"Address.Country\": msg.saveCountryID,\t    \"Address.PostCode\": msg.payload.PostCode,\t    \"Phone\": msg.payload.Phone,\t    \"Mobile\": msg.payload.Mobile,\t    \"Fax\": msg.payload.Fax,\t    \"EmailAddress\": msg.payload.Email,\t    \"Contacts\": [msg.savePersons]\t }\t  ",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3160,
+        "y": 1520,
+        "wires": [
+            [
+                "b3d84033.561b3"
+            ]
+        ]
+    },
+    {
+        "id": "57770bbe.4bf394",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Restore Organization",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "saveOrganization",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3100,
+        "y": 1460,
+        "wires": [
+            [
+                "5d9a4e3.3e2aab"
+            ]
+        ]
+    },
+    {
+        "id": "f7d7974a.fa4b08",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Desired Saved Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 3470,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "b80e8fcf.c435b",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Transform Persons",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.(\t   {\t       \"ID\": $.id,\t       \"FullName\": $boolean(\t           $substringAfter(\t               (\t                   $boolean($.last_name) ? ($.last_name & ',') : ''\t               ) & ''  & (\t                   $boolean($.first_name) ? $.first_name : ''\t               ),\t               ','\t           )\t       ) ? \t                    $trim(\t           (\t               $boolean($.last_name) ? ($.last_name & ',') : ''\t           ) & ''  & (\t               $boolean($.first_name) ? $.first_name : ''\t           )\t       ) : \t                    $substringBefore(\t           $trim(\t               (\t                   $boolean($.last_name) ? ($.last_name & ',') : ''\t               ) & ''  & (\t                   $boolean($.first_name) ? $.first_name : ''\t               )\t           ),\t           ','\t       ),\t       \"FirstName\": $.first_name,\t       \"LastName\": $.last_name\t   \t   }\t\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 990,
+        "y": 320,
+        "wires": [
+            [
+                "da56c810.17d2e8",
+                "ef224bbd.7d59f8"
+            ]
+        ]
+    },
+    {
+        "id": "da56c810.17d2e8",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Save Persons",
+        "rules": [
+            {
+                "t": "set",
+                "p": "orgName",
+                "pt": "msg",
+                "to": "payload.FullName",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "savePersons",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "countryName",
+                "pt": "msg",
+                "to": "payload.Country",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"api_token\":$globalContext('pipedriveApiKey')}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 400,
+        "wires": [
+            [
+                "2b5977f.c558908"
+            ]
+        ]
+    },
+    {
+        "id": "1eab3640.5b0d7a",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Saved Payload",
+        "info": "{\n   \"Code\": msg.payload.Code,\n   \"Name\": msg.payload.Name,\n   \"TradingName\": msg.payload.Name,\n   \"Address\": msg.payload.Address,\n   \"Phone\": msg.payload.Phone,\n   \"Mobile\": msg.payload.Mobile,\n   \"Fax\": msg.payload.Fax,\n   \"EmailAddress\": msg.payload.Email,\n   \"Contacts\": $flowContext(\"savePersons\")\n }\n  ",
+        "x": 2360,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "8b4e374f.3c7788",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Desired Payload",
+        "info": "{\n    \"Code\": \"STARK\",\n    \"Name\": \"Tony Stark\",\n    \"Address.AddressLine1\": \"10880 Malibu Point\",\n    \"Address.City\": \"MALIBU\",\n    \"Address.County\": \"LOS ANGELES\",\n    \"Address.Country\": 4372277087963,\n    \"Address.PostCode\": \"90265\",\n    \"Phone\": \"02 1111 2222\",\n    \"Mobile\": \"\",\n    \"Fax\": \"02 2222 3333\",\n    \"EmailAddress\": \"tonk@stark.com\",\n    \"SalesRep\": 8602819495740,\n    \"Contacts\": [\n        {\n            \"FirstName\": \"Tony\",\n            \"LastName\": \"Stark\"\n        }\n    ]\n}",
+        "x": 2360,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "73d613f9.a4c9ec",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Save Customer",
+        "rules": [
+            {
+                "t": "set",
+                "p": "saveCustomer",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "saveCustomerId",
+                "pt": "msg",
+                "to": "payload.Data[0].ID",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2360,
+        "y": 1260,
+        "wires": [
+            [
+                "4c405d6d.9ccd34",
+                "27068df3.fc79e2"
+            ]
+        ]
+    },
+    {
+        "id": "8a7105df.2e3ab8",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Exists",
+        "info": "",
+        "x": 2330,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "3f65dbfe.bfbf34",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Does not Exist",
+        "info": "",
+        "x": 2350,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "27068df3.fc79e2",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Restore Persons",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "savePersons",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2570,
+        "y": 1340,
+        "wires": [
+            [
+                "27bc3a0a.0e97c6",
+                "e3751c71.62201"
+            ]
+        ]
+    },
+    {
+        "id": "da797e86.fffe4",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Persons",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.(\t   {\t        \"ID\": msg.saveCustomer.Data[0].Contacts[FullName=$.FullName][0].ID,\t        \"FirstName\": $.FirstName,\t        \"LastName\": $.LastName\t   }\t)\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2800,
+        "y": 1400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1b80bda0.0ae622",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Save Persons",
+        "rules": [
+            {
+                "t": "set",
+                "p": "savePersons",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3000,
+        "y": 1400,
+        "wires": [
+            [
+                "e6a0e6f7.ae0848",
+                "57770bbe.4bf394"
+            ]
+        ]
+    },
+    {
+        "id": "fece3fa4.846f7",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 2990,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "eb43112.db845f",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Set Headers and ID",
+        "func": "msg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Accept'] = 'application/json';\nmsg.headers['Authorization'] = 'Bearer '+global.get('harmoniqApiKey');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2930,
+        "y": 1080,
+        "wires": [
+            [
+                "bebf4acf.785ad8",
+                "b6d11177.bf0ad"
+            ]
+        ]
+    },
+    {
+        "id": "b3d84033.561b3",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Set Headers and ID",
+        "func": "msg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Authorization'] = 'Bearer '+global.get('harmoniqApiKey');\nmsg.headers['accept'] = 'application/json';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3210,
+        "y": 1580,
+        "wires": [
+            [
+                "f7d7974a.fa4b08",
+                "8d801632.d05d98"
+            ]
+        ]
+    },
+    {
+        "id": "4c405d6d.9ccd34",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 2550,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "93426a8b.dd2078",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Get Country ID",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://api.micronet.com.au:4445/apitest/Countries?Name[eq]={{countryName}}",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 1340,
+        "y": 840,
+        "wires": [
+            [
+                "c0b91f6f.c7535",
+                "31b44f84.f102b"
+            ]
+        ]
+    },
+    {
+        "id": "4327e522.b3c5fc",
+        "type": "change",
+        "z": "f59676ac.2cfda8",
+        "name": "Save Country ID",
+        "rules": [
+            {
+                "t": "set",
+                "p": "saveCountryID",
+                "pt": "msg",
+                "to": "payload.Data[0].ID",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 960,
+        "wires": [
+            [
+                "64516855.aeb798"
+            ]
+        ]
+    },
+    {
+        "id": "8d801632.d05d98",
+        "type": "http request",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Customer",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://api.micronet.com.au:4445/apitest/Customers/{{saveCustomerId}}",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 3290,
+        "y": 1640,
+        "wires": [
+            [
+                "5102fd58.acbb94"
+            ]
+        ]
+    },
+    {
+        "id": "d13471d7.8e2d5",
+        "type": "comment",
+        "z": "f59676ac.2cfda8",
+        "name": "Change credentials here",
+        "info": "",
+        "x": 530,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "26ea2946.6b26d6",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Set credentials and url",
+        "func": "global.set(\"harmoniqApiKey\",\"NGM4YjVlNzctZjZmNC00NTE0LTk5OW\")\nglobal.set(\"pipedriveApiKey\",\"aa3b455fa1586782c7621faab11ffd263e80e462\")\nif(msg.payload.meta.object=='organization')\n{\n    msg.orgId=msg.payload.current.id;\n    \n}\nelse if(msg.payload.meta.object=='person')\n{\n    msg.orgId=msg.payload.current.org_id;\n   \n}\nif(msg.orgId===null)\n{\n    node.warn('Org_id not found. Stop the flow.')\n}\nelse\n{\n     msg.payload={\"api_token\":global.get('pipedriveApiKey')};\n    return msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 120,
+        "wires": [
+            [
+                "8858714b.4c549"
+            ]
+        ]
+    },
+    {
+        "id": "501bbbf.4fccf44",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Persons Webhook",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 130,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "ef224bbd.7d59f8",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Persons payload",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1250,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a3c375ff.a8f558",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Response processor",
+        "func": "if (typeof msg.payload.data!='undefined' && msg.payload.data!==null)\n{\n   msg.personExists=true;\n    return [msg,null];\n}\nelse\n{\n    msg.personExists=false;\n    node.warn('No persons in the organisation');\n    msg.payload={\"api_token\":global.get('pipedriveApiKey')};\n    return [null,msg];\n    \n}\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "b80e8fcf.c435b"
+            ],
+            [
+                "2b5977f.c558908"
+            ]
+        ]
+    },
+    {
+        "id": "168da9ce.9f8db6",
+        "type": "switch",
+        "z": "f59676ac.2cfda8",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 590,
+        "y": 240,
+        "wires": [
+            [
+                "a3c375ff.a8f558"
+            ],
+            [
+                "ee678c69.b9864"
+            ]
+        ]
+    },
+    {
+        "id": "ee678c69.b9864",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Error while getting persons",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 920,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8c2b3e21.f71dd",
+        "type": "switch",
+        "z": "f59676ac.2cfda8",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 850,
+        "y": 540,
+        "wires": [
+            [
+                "444b75e5.b57c1c"
+            ],
+            [
+                "cc4f1485.51d6a8"
+            ]
+        ]
+    },
+    {
+        "id": "cc4f1485.51d6a8",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Error while getting Organisation",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1130,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "444b75e5.b57c1c",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Response processor",
+        "func": "if (typeof msg.payload.data!='undefined' && msg.payload.data!==null)\n{\n    return msg;\n}\nelse\n{\n    node.warn('Organisation not found');\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 600,
+        "wires": [
+            [
+                "a66711a6.d75758",
+                "28db4b6a.283d94"
+            ]
+        ]
+    },
+    {
+        "id": "28db4b6a.283d94",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "GetOrganisation response",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1170,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "c0b91f6f.c7535",
+        "type": "switch",
+        "z": "f59676ac.2cfda8",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1430,
+        "y": 900,
+        "wires": [
+            [
+                "4327e522.b3c5fc",
+                "31b44f84.f102b"
+            ],
+            [
+                "9c4af5c3.b6a7e8"
+            ]
+        ]
+    },
+    {
+        "id": "9c4af5c3.b6a7e8",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Error while getting Country Id",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1700,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "41b73e9d.8c0ac",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Final Payload",
+        "func": "var contacts=[];\nif(msg.personExists)\n{\n    node.warn('Number of persons'+msg.savePersons.length);\n    node.warn('type of savePersons'+typeof msg.savePersons);\n    if(typeof msg.savePersons==='object')\n    {\n        contacts.push(\n            {\n                \"ID\": msg.savePersons.ID,\n                \"FirstName\": msg.savePersons.FirstName,\n                \"LastName\": msg.savePersons.LastName\n            });\n    }\n    else\n    {\n        for(i=0;i<msg.savePersons.length;i++)\n        {\n            contacts.push(\n                {\n                    \"ID\": msg.savePersons[i].ID,\n                    \"FirstName\": msg.savePersons[i].FirstName,\n                    \"LastName\": msg.savePersons[i].LastName\n                });\n        }\n    }\n}\nelse\n{\n \n}\n\nmsg.payload= \n   {\"Code\": msg.payload.Code,\n    \"Name\": msg.payload.Name,\n    \"TradingName\": msg.payload.Name,\n    \"Address.AddressLine1\": msg.payload.AddressLine1,\n    \"Address.AddressLine2\": msg.payload.AddressLine2,\n    \"Address.City\": msg.payload.City,\n    \"Address.Country\": msg.saveCountryID,\n\t\"Address.County\": msg.payload.County,\n    \"Address.PostCode\": msg.payload.PostCode,\n    \"Phone\": msg.payload.Phone,\n    \"Mobile\": msg.payload.Mobile,\n    \"Fax\": msg.payload.Fax,\n    \"EmailAddress\": msg.payload.Email,\n    \"Contacts\": contacts\t };\t \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2680,
+        "y": 1080,
+        "wires": [
+            [
+                "eb43112.db845f"
+            ]
+        ]
+    },
+    {
+        "id": "31b44f84.f102b",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1590,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "64516855.aeb798",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Set Headers and ID",
+        "func": "msg.payload = \"\";\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Authorization'] = 'Bearer '+global.get('harmoniqApiKey');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1610,
+        "y": 1020,
+        "wires": [
+            [
+                "581a6255.a92d34"
+            ]
+        ]
+    },
+    {
+        "id": "27bc3a0a.0e97c6",
+        "type": "function",
+        "z": "f59676ac.2cfda8",
+        "name": "Update Persons",
+        "func": "var persons = [];\nvar found = false;\nnode.warn('payload type ' + typeof msg.payload);\nif (typeof msg.payload !== 'undefined') {\n    node.warn('payload length ' + msg.payload.length);\n   if(typeof msg.payload.length !== 'undefined')\n   {\n        for (i = 0; i < msg.payload.length; i++) {\n            found = false;\n            if (typeof msg.saveCustomer.Data[0].Contacts !== 'undefined' && msg.saveCustomer.Data[0].Contacts.length > 0) {\n                for (j = 0; j < msg.saveCustomer.Data[0].Contacts.length; j++) {\n                    if (msg.payload[i].FullName === msg.saveCustomer.Data[0].Contacts[j].FullName) {\n                        persons.push({\n                            \"ID\": msg.saveCustomer.Data[0].Contacts[j].ID,\n                            \"FirstName\": msg.payload[i].FirstName,\n                            \"LastName\": msg.payload[i].LastName\n\n                        });\n                        found = true;\n                        break;\n                    }\n                }\n                if (!found) {\n                        persons.push({\n                            \"FirstName\": msg.payload[i].FirstName,\n                            \"LastName\": msg.payload[i].LastName\n                        });\n                    }\n            }\n            else {\n            node.warn('Else of customer undefined or count >0 not found');\n            persons.push({\n                \"FirstName\": msg.payload[i].FirstName,\n                \"LastName\": msg.payload[i].LastName\n            });\n        }\n            \n\n        }\n   }\n   else if(typeof msg.payload.FirstName!== 'undefined' ||  typeof msg.payload.LastName !== 'undefined')\n   {\n       if (typeof msg.saveCustomer.Data[0].Contacts !== 'undefined' && msg.saveCustomer.Data[0].Contacts.length > 0) \n       {\n                for (j = 0; j < msg.saveCustomer.Data[0].Contacts.length; j++) {\n                    if (msg.payload.FullName === msg.saveCustomer.Data[0].Contacts[j].FullName) {\n                        persons.push({\n                            \"ID\": msg.saveCustomer.Data[0].Contacts[j].ID,\n                            \"FirstName\": msg.payload.FirstName,\n                            \"LastName\": msg.payload.LastName\n\n                        });\n                        found = true;\n                        break;\n                    }\n                }\n                if (!found) {\n                        persons.push({\n                            \"FirstName\": msg.payload.FirstName,\n                            \"LastName\": msg.payload.LastName\n                        });\n                    }\n                \n       }\n                else\n                {\n       persons.push({\n                \"FirstName\": msg.payload.FirstName,\n                \"LastName\": msg.payload.LastName\n            });\n                }\n   }\n    \n}\n\n\nmsg.payload = persons;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2780,
+        "y": 1340,
+        "wires": [
+            [
+                "fece3fa4.846f7",
+                "1b80bda0.0ae622"
+            ]
+        ]
+    },
+    {
+        "id": "daf2450e.845a08",
+        "type": "http response",
+        "z": "f59676ac.2cfda8",
+        "name": "Response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 100,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "632a52e7.a0c37c",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Persons Response payload",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 960,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "e6a0e6f7.ae0848",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 3230,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "e3751c71.62201",
+        "type": "debug",
+        "z": "f59676ac.2cfda8",
+        "name": "Persons  Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 2700,
+        "y": 1460,
+        "wires": []
+    }
+]

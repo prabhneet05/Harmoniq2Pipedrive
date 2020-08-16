@@ -1,0 +1,373 @@
+[
+    {
+        "id": "9118819.b0c968",
+        "type": "tab",
+        "label": "Playground",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "cb67f9c9.7d0208",
+        "type": "inject",
+        "z": "9118819.b0c968",
+        "name": "Start Schedule with timestamp",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 200,
+        "y": 480,
+        "wires": [
+            [
+                "fe36c8ce.637708"
+            ]
+        ]
+    },
+    {
+        "id": "f02b82a5.f2cd1",
+        "type": "change",
+        "z": "9118819.b0c968",
+        "name": "Set lastExecution variable",
+        "rules": [
+            {
+                "t": "set",
+                "p": "lastExecution",
+                "pt": "global",
+                "to": "",
+                "tot": "date"
+            },
+            {
+                "t": "set",
+                "p": "lastExecution",
+                "pt": "flow",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 830,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6717ea2.1f8ca14",
+        "type": "debug",
+        "z": "9118819.b0c968",
+        "name": "log payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 790,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "fe36c8ce.637708",
+        "type": "change",
+        "z": "9118819.b0c968",
+        "name": "Set json display message",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"current\": $number($.msg.payload),\t    \"previous\": $number($flowContext('lastExecution'))\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 520,
+        "wires": [
+            [
+                "f02b82a5.f2cd1",
+                "6717ea2.1f8ca14"
+            ]
+        ]
+    },
+    {
+        "id": "1ba5f16b.f96a6f",
+        "type": "debug",
+        "z": "9118819.b0c968",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 330,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "edc54ca6.a99c6",
+        "type": "inject",
+        "z": "9118819.b0c968",
+        "name": "query parameter",
+        "topic": "",
+        "payload": "{\"success\":true,\"data\":[{\"id\":33,\"company_id\":7649183,\"owner_id\":{\"id\":11666767,\"name\":\"Prabh\",\"email\":\"nzemail123456@gmail.com\",\"has_pic\":0,\"pic_hash\":null,\"active_flag\":true,\"value\":11666767},\"org_id\":{\"name\":\"MichelleWarehouse\",\"people_count\":2,\"owner_id\":11666767,\"address\":\"Takapuna, Auckland, New Zealand\",\"active_flag\":true,\"cc_email\":\"unityit3@pipedrivemail.com\",\"value\":19},\"first_name\":\"Shireen\",\"last_name\":\"\",\"open_deals_count\":0,\"related_open_deals_count\":0,\"closed_deals_count\":0,\"related_closed_deals_count\":0,\"participant_open_deals_count\":0,\"participant_closed_deals_count\":0,\"email_messages_count\":0,\"activities_count\":0,\"done_activities_count\":0,\"undone_activities_count\":0,\"files_count\":0,\"notes_count\":0,\"followers_count\":1,\"won_deals_count\":0,\"related_won_deals_count\":0,\"lost_deals_count\":0,\"related_lost_deals_count\":0,\"active_flag\":true,\"phone\":[{\"label\":\"work\",\"value\":\"225245657\",\"primary\":true}],\"email\":[{\"value\":\"\",\"primary\":true}],\"first_char\":\"s\",\"update_time\":\"2020-08-13 20:16:42\",\"add_time\":\"2020-08-13 09:07:28\",\"visible_to\":\"3\",\"picture_id\":null,\"next_activity_date\":null,\"next_activity_time\":null,\"next_activity_id\":null,\"last_activity_id\":null,\"last_activity_date\":null,\"last_incoming_mail_time\":null,\"last_outgoing_mail_time\":null,\"label\":null,\"org_name\":\"MichelleWarehouse\",\"owner_name\":\"Prabh\",\"cc_email\":\"unityit3@pipedrivemail.com\"},{\"id\":36,\"company_id\":7649183,\"owner_id\":{\"id\":11666767,\"name\":\"Prabh\",\"email\":\"nzemail123456@gmail.com\",\"has_pic\":0,\"pic_hash\":null,\"active_flag\":true,\"value\":11666767},\"org_id\":{\"name\":\"MichelleWarehouse\",\"people_count\":2,\"owner_id\":11666767,\"address\":\"Takapuna, Auckland, New Zealand\",\"active_flag\":true,\"cc_email\":\"unityit3@pipedrivemail.com\",\"value\":19},\"first_name\":\"\",\"last_name\":\"\",\"open_deals_count\":0,\"related_open_deals_count\":0,\"closed_deals_count\":0,\"related_closed_deals_count\":0,\"participant_open_deals_count\":0,\"participant_closed_deals_count\":0,\"email_messages_count\":0,\"activities_count\":0,\"done_activities_count\":0,\"undone_activities_count\":0,\"files_count\":0,\"notes_count\":0,\"followers_count\":1,\"won_deals_count\":0,\"related_won_deals_count\":0,\"lost_deals_count\":0,\"related_lost_deals_count\":0,\"active_flag\":true,\"phone\":[{\"value\":\"\",\"primary\":true}],\"email\":[{\"value\":\"\",\"primary\":true}],\"first_char\":\"p\",\"update_time\":\"2020-08-13 20:16:42\",\"add_time\":\"2020-08-13 09:40:56\",\"visible_to\":\"3\",\"picture_id\":null,\"next_activity_date\":null,\"next_activity_time\":null,\"next_activity_id\":null,\"last_activity_id\":null,\"last_activity_date\":null,\"last_incoming_mail_time\":null,\"last_outgoing_mail_time\":null,\"label\":null,\"org_name\":\"MichelleWarehouse\",\"owner_name\":\"Prabh\",\"cc_email\":\"unityit3@pipedrivemail.com\"}],\"additional_data\":{\"pagination\":{\"start\":0,\"limit\":100,\"more_items_in_collection\":false}},\"related_objects\":{\"organization\":{\"19\":{\"id\":19,\"name\":\"MichelleWarehouse\",\"people_count\":2,\"owner_id\":11666767,\"address\":\"Takapuna, Auckland, New Zealand\",\"active_flag\":true,\"cc_email\":\"unityit3@pipedrivemail.com\"}},\"user\":{\"11666767\":{\"id\":11666767,\"name\":\"Prabh\",\"email\":\"nzemail123456@gmail.com\",\"has_pic\":0,\"pic_hash\":null,\"active_flag\":true}}}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "x": 100,
+        "y": 200,
+        "wires": [
+            [
+                "3dde42c7.edde7e"
+            ]
+        ]
+    },
+    {
+        "id": "7415c5c9.f4ff1c",
+        "type": "function",
+        "z": "9118819.b0c968",
+        "name": "",
+        "func": "msg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Accept'] = 'application/json';\nmsg.headers['Authorization'] = 'Bearer NGM4YjVlNzctZjZmNC00NTE0LTk5OW';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 310,
+        "y": 160,
+        "wires": [
+            [
+                "909d970b.92cba8"
+            ]
+        ]
+    },
+    {
+        "id": "f24639cb.672308",
+        "type": "change",
+        "z": "9118819.b0c968",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 710,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c86bfb27.1ca738",
+        "type": "function",
+        "z": "9118819.b0c968",
+        "name": "",
+        "func": "if(msg.payload.a==3)\nnode.warn('a=3 so ignore')\nelse\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 590,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ff77f85b.746ec8",
+        "type": "change",
+        "z": "9118819.b0c968",
+        "name": "Store payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"term\":\"Domain Electrical Wholesale Ltd\",\"api_token\":\"f56b9878d27a8885ad7dea26b40ef51747a43f4b\"}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 400,
+        "wires": [
+            [
+                "1c9524de.8d218b"
+            ]
+        ]
+    },
+    {
+        "id": "1c9524de.8d218b",
+        "type": "http request",
+        "z": "9118819.b0c968",
+        "name": "getOrganisationWithName",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://api.pipedrive.com/v1/organizations/search",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 580,
+        "y": 300,
+        "wires": [
+            [
+                "e9700800.59c658"
+            ]
+        ]
+    },
+    {
+        "id": "e9700800.59c658",
+        "type": "switch",
+        "z": "9118819.b0c968",
+        "name": "check statusCode",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "[2XX]",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 810,
+        "y": 280,
+        "wires": [
+            [],
+            [
+                "c5e47fd8.c959c"
+            ]
+        ]
+    },
+    {
+        "id": "c5e47fd8.c959c",
+        "type": "debug",
+        "z": "9118819.b0c968",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1070,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "909d970b.92cba8",
+        "type": "debug",
+        "z": "9118819.b0c968",
+        "name": "First Message",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 500,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3dde42c7.edde7e",
+        "type": "change",
+        "z": "9118819.b0c968",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "var",
+                "pt": "global",
+                "to": "123456",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.(\t   {\t        \"ID\": $.id,\t        \"FullName\": $boolean($substringAfter(($boolean($.last_name) ? ($.last_name & ',') : '') & ''  & ($boolean($.first_name) ? $.first_name : ''),',')) ? \t                    $trim(($boolean($.last_name) ? ($.last_name & ',') : '') & ''  & ($boolean($.first_name) ? $.first_name : '')) : \t                    $substringBefore($trim(($boolean($.last_name) ? ($.last_name & ',') : '') & ''  & ($boolean($.first_name) ? $.first_name : '')),','),\t        \"FirstName\": $.first_name,\t        \"LastName\": $.last_name\t   }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 160,
+        "y": 60,
+        "wires": [
+            [
+                "5c2a6989.e44548"
+            ]
+        ]
+    },
+    {
+        "id": "5c2a6989.e44548",
+        "type": "debug",
+        "z": "9118819.b0c968",
+        "name": "Insert Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 580,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "61050538.0ab1cc",
+        "type": "rbe",
+        "z": "9118819.b0c968",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 1080,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    }
+]
